@@ -1,0 +1,10 @@
+{
+	"homepage": "",
+	"promos": {
+		"1.9.4-latest": "1.0.0",
+		"1.9.4-recommended": "1.0.0"
+	},
+	"1.9.4": {
+		"1.0.0": "Initial 1.9.4 version"
+	}
+}
