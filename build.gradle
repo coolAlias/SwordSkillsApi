@@ -1,11 +1,7 @@
-// For those who want the bleeding edge
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
@@ -15,7 +11,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.1.0"
 group= "com.google.coolalias008.swordskillsapi" 
-archivesBaseName = "1.10.2-SwordSkillsApi"
+archivesBaseName = "1.11.2-SwordSkillsApi"
 
 sourceCompatibility = targetCompatibility = "1.7"
 
@@ -25,9 +21,9 @@ dependencies {
 }
 
 minecraft {
-    version = "1.10.2-12.18.3.2511"
+    version = "1.11.2-13.20.1.2516"
     runDir = "eclipse"
-    mappings = "stable_29"
+    mappings = "stable_32"
 }
 
 processResources
