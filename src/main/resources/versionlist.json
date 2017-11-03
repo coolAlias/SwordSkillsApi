@@ -1,8 +1,13 @@
 {
 	"homepage": "https://www.planetminecraft.com/mod/sword-skills-api/",
 	"promos": {
+		"1.10.2-latest": "1.1.0",
+		"1.10.2-recommended": "1.1.0",
 		"1.9.4-latest": "1.1.0",
 		"1.9.4-recommended": "1.1.0"
+	},
+	"1.10.2": {
+		"1.1.0": "Initial 1.10.2 version"
 	},
 	"1.9.4": {
 		"1.1.0": "Re-added IDashItem"
