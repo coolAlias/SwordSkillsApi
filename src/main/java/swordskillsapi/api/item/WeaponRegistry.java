@@ -21,15 +21,29 @@ import swordskillsapi.SwordSkillsApi;
  */
 public class WeaponRegistry
 {
-	/** FML Inter-Mod Communication key for registering items as swords */
+	/** Use {@link IMC_ALLOW_SWORD} instead */
+	@Deprecated
 	public static final String IMC_SWORD_KEY = "ZssRegisterSword";
 
-	/** FML Inter-Mod Communication key for registering items as non-sword weapons */
+	/** Use {@link IMC_ALLOW_WEAPON} instead */
+	@Deprecated
 	public static final String IMC_WEAPON_KEY = "ZssRegisterWeapon";
 
-	private final Set<Item> swords = new HashSet<Item>();
+	/** FML Inter-Mod Communication key for adding an item to the list of allowed swords */
+	public static final String IMC_ALLOW_SWORD = "allow_sword";
 
-	private final Set<Item> weapons = new HashSet<Item>();
+	/** FML Inter-Mod Communication key for adding an item to the list of allowed non-sword melee weapons */
+	public static final String IMC_ALLOW_WEAPON = "allow_weapon";
+
+	/** FML Inter-Mod Communication key for adding an item to the list of items disallowed as swords */
+	public static final String IMC_FORBID_SWORD = "forbid_sword";
+
+	/** FML Inter-Mod Communication key for adding an item to the list of items disallowed as non-sword melee weapons */
+	public static final String IMC_FORBID_WEAPON = "forbid_weapon";
+
+	private final Set<Item> allowed_swords = new HashSet<Item>();
+
+	private final Set<Item> allowed_weapons = new HashSet<Item>();
 
 	private final Set<Item> forbidden_swords = new HashSet<Item>();
 
@@ -40,10 +54,10 @@ public class WeaponRegistry
 	private WeaponRegistry() {}
 
 	/**
-	 * Returns true if the item is registered as a sword or extends ItemSword.
+	 * Returns true if the item is considered a sword and has not been forbidden as such
 	 */
 	public boolean isSword(Item item) {
-		return !isSwordForbidden(item) && (item instanceof ItemSword || swords.contains(item));
+		return !isSwordForbidden(item) && (item instanceof ItemSword || allowed_swords.contains(item));
 	}
 
 	/**
@@ -55,10 +69,10 @@ public class WeaponRegistry
 	}
 
 	/**
-	 * Returns true if the item is registered as a non-sword weapon or extends ItemSword
+	 * Returns true if the item is considered a melee weapon of any kind and has not been forbidden as such
 	 */
 	public boolean isWeapon(Item item) {
-		return !isWeaponForbidden(item) && (item instanceof ItemSword || weapons.contains(item));
+		return !isWeaponForbidden(item) && (item instanceof ItemSword || allowed_weapons.contains(item));
 	}
 
 	/**
@@ -76,10 +90,14 @@ public class WeaponRegistry
 	public void processMessage(FMLInterModComms.IMCMessage msg) {
 		if (!msg.isItemStackMessage()) {
 			return;
-		} else if (msg.key.equalsIgnoreCase(IMC_SWORD_KEY)) {
+		} else if (msg.key.equalsIgnoreCase(IMC_ALLOW_SWORD) || msg.key.equalsIgnoreCase(IMC_SWORD_KEY)) {
 			registerSword("IMC", msg.getSender(), msg.getItemStackValue().getItem());
-		} else if (msg.key.equalsIgnoreCase(IMC_WEAPON_KEY)) {
+		} else if (msg.key.equalsIgnoreCase(IMC_ALLOW_WEAPON) || msg.key.equalsIgnoreCase(IMC_WEAPON_KEY)) {
 			registerWeapon("IMC", msg.getSender(), msg.getItemStackValue().getItem());
+		} else if (msg.key.equalsIgnoreCase(IMC_FORBID_SWORD)) {
+			removeSword("IMC", msg.getSender(), msg.getItemStackValue().getItem());
+		} else if (msg.key.equalsIgnoreCase(IMC_FORBID_WEAPON)) {
+			removeWeapon("IMC", msg.getSender(), msg.getItemStackValue().getItem());
 		} else {
 			SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] Invalid IMC message method name %s from mod %s", msg.key, msg.getSender()));
 		}
@@ -137,9 +155,9 @@ public class WeaponRegistry
 	 */
 	public boolean registerSword(String origin, String modid, Item item) {
 		boolean added = false;
-		if (weapons.contains(item)) {
+		if (allowed_weapons.contains(item)) {
 			SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [%s] [%s] CONFLICT: %s cannot be registered as a sword - it is already registered as a non-sword weapon", origin, modid, item.getRegistryName().toString()));
-		} else if (swords.add(item)) {
+		} else if (allowed_swords.add(item)) {
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] [%s] Registered %s as a sword", origin, modid, item.getRegistryName().toString()));
 			added = true;
 		} else {
@@ -159,9 +177,9 @@ public class WeaponRegistry
 	 */
 	public boolean registerWeapon(String origin, String modid, Item item) {
 		boolean added = false;
-		if (swords.contains(item)) {
+		if (allowed_swords.contains(item)) {
 			SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [%s] [%s] CONFLICT: %s cannot be registered as a weapon - it is already registered as a sword", origin, modid, item.getRegistryName().toString()));
-		} else if (weapons.add(item)) {
+		} else if (allowed_weapons.add(item)) {
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] [%s] Registered %s as a non-sword weapon", origin, modid, item.getRegistryName().toString()));
 			added = true;
 		} else {
@@ -181,7 +199,7 @@ public class WeaponRegistry
 			added = true;
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] [%s] %s added to FORBIDDEN swords list", origin, modid, item.getRegistryName().toString()));
 		}
-		if (swords.remove(item)) {
+		if (allowed_swords.remove(item)) {
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] [%s] Removed %s from list of registered SWORDS", origin, modid, item.getRegistryName().toString()));
 			return true;
 		} else if (!added) {
@@ -200,7 +218,7 @@ public class WeaponRegistry
 			added = true;
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] [%s] %s added to FORBIDDEN weapons list", origin, modid, item.getRegistryName().toString()));
 		}
-		if (weapons.remove(item)) {
+		if (allowed_weapons.remove(item)) {
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] [%s] Removed %s from list of registered WEAPONS", origin, modid, item.getRegistryName().toString()));
 			return true;
 		} else if (!added) {
