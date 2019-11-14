@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -72,7 +73,7 @@ public class WeaponRegistry
 	 * Returns true if the item is considered a melee weapon of any kind and has not been forbidden as such
 	 */
 	public boolean isWeapon(Item item) {
-		return !isWeaponForbidden(item) && (item instanceof ItemSword || allowed_weapons.contains(item));
+		return !isWeaponForbidden(item) && (item instanceof ItemSword || item instanceof ItemAxe || allowed_weapons.contains(item));
 	}
 
 	/**
