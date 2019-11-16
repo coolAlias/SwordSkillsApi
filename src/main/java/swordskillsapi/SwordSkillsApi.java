@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import swordskillsapi.api.item.WeaponRegistry;
 
 @Mod(modid = SwordSkillsApi.ID, name = SwordSkillsApi.NAME, version = SwordSkillsApi.VERSION, updateJSON = SwordSkillsApi.VERSION_LIST)
@@ -23,6 +25,16 @@ public class SwordSkillsApi
 	public static CommonProxy proxy;
 
 	public static final Logger LOGGER = LogManager.getLogger(ID);
+
+	@Mod.EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		Config.preInit(event);
+	}
+
+	@Mod.EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
+		Config.postInit();
+	}
 
 	@Mod.EventHandler
 	public void processMessages(FMLInterModComms.IMCEvent event) {

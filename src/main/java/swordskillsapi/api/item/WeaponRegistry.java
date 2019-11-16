@@ -141,21 +141,25 @@ public class WeaponRegistry
 	}
 
 	/**
+	 * @deprecated Support for external WeaponRegistry configs will be removed in a later version
 	 * Registers an array of named items either as swords or generic weapons
 	 * @param names Must be in the format 'modid:registered_item_name'
 	 * @param origin Information about the origin of the names array, e.g. "{mod_id}" or "Config:{mod_id}"
 	 * @param isSword True to register the items as swords, or false for generic melee weapons
 	 */
+	@Deprecated
 	public void registerItems(String[] names, String origin, boolean isSword) {
 		processArray(names, origin, isSword, true);
 	}
 
 	/**
+	 * @deprecated Support for external WeaponRegistry configs will be removed in a later version
 	 * Forbids an array of named items either from the swords or generic weapons registry
 	 * @param names Must be in the format 'modid:registered_item_name'
 	 * @param origin Information about the origin of the names array, e.g. "{mod_id}" or "Config:{mod_id}"
 	 * @param isSword True to forbid the items as swords, or false for generic melee weapons
 	 */
+	@Deprecated
 	public void forbidItems(String[] names, String origin, boolean isSword) {
 		processArray(names, origin, isSword, false);
 	}
