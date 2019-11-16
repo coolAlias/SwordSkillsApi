@@ -8,7 +8,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import swordskillsapi.api.item.WeaponRegistry;
+import swordskillsapi.command.CommandWeaponRegistry;
 
 @Mod(modid = SwordSkillsApi.ID, name = SwordSkillsApi.NAME, version = SwordSkillsApi.VERSION, updateJSON = SwordSkillsApi.VERSION_LIST)
 public class SwordSkillsApi
@@ -41,5 +43,10 @@ public class SwordSkillsApi
 		for (final FMLInterModComms.IMCMessage msg : event.getMessages()) {
 			WeaponRegistry.INSTANCE.processMessage(msg);
 		}
+	}
+
+	@Mod.EventHandler
+	public void onServerStarting(FMLServerStartingEvent event) {
+		event.registerServerCommand(CommandWeaponRegistry.INSTANCE);
 	}
 }
