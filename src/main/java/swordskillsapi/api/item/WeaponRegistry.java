@@ -96,24 +96,47 @@ public class WeaponRegistry
 	 * and the message contains an ItemStack, the stack will be registered appropriately.
 	 */
 	public void processMessage(FMLInterModComms.IMCMessage msg) {
+		if (msg.isItemStackMessage()) {
+			processMessage(msg, msg.getItemStackValue().getItem());
+		} else if (msg.isResourceLocationMessage()) {
+			Item item = Item.REGISTRY.getObject(msg.getResourceLocationValue());
+			if (item == null) {
+				SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [IMC] [%s] Item %s could not be found - the mod may not be installed or it may have been typed incorrectly", msg.getSender(), msg.getResourceLocationValue().toString()));
+			} else {
+				processMessage(msg, item);
+			}
+		} else if (msg.isStringMessage()) {
+			ResourceLocation location = WeaponRegistry.getResourceLocation(msg.getStringValue());
+			Item item = (location == null ? null : Item.REGISTRY.getObject(location));
+			if (location == null) {
+				SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [IMC] [%s] Invalid ResourceLocation string %s in IMC message from mod %s", msg.getSender(), msg.getStringValue()));
+			} else if (item == null) {
+				SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [IMC] [%s] Item %s could not be found - the mod may not be installed or it may have been typed incorrectly", msg.getSender(), location.toString()));
+			} else {
+				processMessage(msg, item);
+			}
+		} else {
+			SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [IMC] [%s] Invalid IMC message type %s", msg.getSender(), msg.getMessageType()));
+		}
+	}
+
+	private void processMessage(FMLInterModComms.IMCMessage msg, Item item) {
 		String origin = "IMC:" + msg.getSender();
 		String method = msg.key.toLowerCase();
 		boolean override = method.endsWith(IMC_OVERRIDE);
 		if (override) {
 			method = method.substring(0, method.length() - IMC_OVERRIDE.length());
 		}
-		if (!msg.isItemStackMessage()) {
-			return;
-		} else if (method.equals(IMC_ALLOW_SWORD) || method.equals(IMC_SWORD_KEY)) {
-			registerSword(origin, msg.getItemStackValue().getItem(), override);
+		if (method.equals(IMC_ALLOW_SWORD) || method.equals(IMC_SWORD_KEY)) {
+			registerSword(origin, item, override);
 		} else if (method.equals(IMC_ALLOW_WEAPON) || method.equals(IMC_WEAPON_KEY)) {
-			registerWeapon(origin, msg.getItemStackValue().getItem(), override);
+			registerWeapon(origin, item, override);
 		} else if (method.equals(IMC_FORBID_SWORD)) {
-			removeSword(origin, msg.getItemStackValue().getItem(), override);
+			removeSword(origin, item, override);
 		} else if (method.equals(IMC_FORBID_WEAPON)) {
-			removeWeapon(origin, msg.getItemStackValue().getItem(), override);
+			removeWeapon(origin, item, override);
 		} else {
-			SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] Invalid IMC message method name %s from mod %s", msg.key, msg.getSender()));
+			SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [IMC] [%s] Invalid IMC message method name %s", msg.getSender(), msg.key));
 		}
 	}
 
