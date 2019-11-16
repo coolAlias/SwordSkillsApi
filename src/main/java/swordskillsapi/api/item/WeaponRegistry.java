@@ -139,21 +139,23 @@ public class WeaponRegistry
 
 	private void processArray(String[] names, String origin, boolean isSword, boolean register) {
 		for (String s : names) {
-			String[] parts = parseString(s);
-			if (parts != null) {
-				Item item = Item.REGISTRY.getObject(new ResourceLocation(parts[0], parts[1]));
+			ResourceLocation location = WeaponRegistry.getResourceLocation(s);
+			if (location == null) {
+				SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [%s] Invalid ResourceLocation string %s", origin, s));
+			} else {
+				Item item = Item.REGISTRY.getObject(location);
 				if (item == null) {
 					SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [%s] %s could not be found - the mod may not be installed or it may have been typed incorrectly", origin, s));
 				} else if (isSword) {
 					if (register) {
-						registerSword(origin, parts[0], item);
+						registerSword(origin, item, false);
 					} else {
-						removeSword(origin, parts[0], item);
+						removeSword(origin, item, false);
 					}
 				} else if (register) {
-					registerWeapon(origin, parts[0], item);
+					registerWeapon(origin, item, false);
 				} else {
-					removeWeapon(origin, parts[0], item);
+					removeWeapon(origin, item, false);
 				}
 			}
 		}
@@ -267,15 +269,30 @@ public class WeaponRegistry
 	}
 
 	/**
+	 * @deprecated Use {@link WeaponRegistry#getResourceLocation(String)} instead
 	 * Parses a String into an array containing the mod_id and item_name, or NULL if format was invalid
 	 * @param itemid Expected format is 'modid:registered_item_name'
 	 */
+	@Deprecated
 	public static String[] parseString(String itemid) {
 		String[] parts = itemid.split(":");
 		if (parts.length == 2) {
 			return parts;
 		}
 		SwordSkillsApi.LOGGER.error(String.format("[WeaponRegistry] String must be in the format 'modid:registered_item_name', received: %s", itemid));
+		return null;
+	}
+
+	/**
+	 * Parses a String into a ResourceLocation, or NULL if format was invalid
+	 * @param item A valid ResourceLocation string e.g. 'modid:registered_item_name'
+	 */
+	public static ResourceLocation getResourceLocation(String item) {
+		try {
+			return new ResourceLocation(item);
+		} catch (NullPointerException e) {
+			SwordSkillsApi.LOGGER.error(String.format("[WeaponRegistry] Invalid ResourceLocation string: %s", item));
+		}
 		return null;
 	}
 
