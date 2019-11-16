@@ -34,7 +34,7 @@ public class CommandWeaponRegistry extends CommandBase
 	}
 
 	/**
-	 * swordskillsapi <allow|forbid> <sword|weapon> modid:item_name
+	 * swordskillsapi <allow|forbid|is> <sword|weapon> modid:item_name
 	 */
 	@Override
 	public String getCommandUsage(ICommandSender sender) {
@@ -55,8 +55,11 @@ public class CommandWeaponRegistry extends CommandBase
 			throw new WrongUsageException("commands.swordskillsapi.item.unknown", args[2]);
 		}
 		boolean isSword = isSword(args[1]);
-		String msg = "commands.swordskillsapi." + (isSword ? "sword." : "weapon.");
-		if (isAllow(args[0])) {
+		String msg = "commands.swordskillsapi.";
+		if (args[0].equalsIgnoreCase("is")) {
+			boolean is = (isSword ? WeaponRegistry.INSTANCE.isSword(item) : WeaponRegistry.INSTANCE.isWeapon(item));
+			msg += "is." + (is ? "true" : "false");
+		} else if (args[0].equalsIgnoreCase("allow")) {
 			msg += "allow.";
 			if (isSword) {
 				msg += (WeaponRegistry.INSTANCE.registerSword("Command", item, true) ? "success" : "fail");
@@ -65,7 +68,7 @@ public class CommandWeaponRegistry extends CommandBase
 			} else {
 				msg += "fail";
 			}
-		} else {
+		} else if (args[0].equalsIgnoreCase("forbid")) {
 			msg += "forbid.";
 			if (isSword) {
 				msg += (WeaponRegistry.INSTANCE.removeSword("Command", item, true) ? "success" : "fail");
@@ -74,18 +77,11 @@ public class CommandWeaponRegistry extends CommandBase
 			} else {
 				msg += "fail";
 			}
+		} else {
+			throw new WrongUsageException("commands.swordskillsapi.action.unknown");
 		}
 		String type = "commands.swordskillsapi." + (isSword ? "sword" : "weapon");
 		sender.addChatMessage(new TextComponentTranslation(msg, args[2], new TextComponentTranslation(type)));
-	}
-
-	private boolean isAllow(String arg) throws CommandException {
-		if (arg.equalsIgnoreCase("allow")) {
-			return true;
-		} else if (arg.equalsIgnoreCase("forbid")) {
-			return false;
-		}
-		throw new WrongUsageException("commands.swordskillsapi.action.unknown");
 	}
 
 	private boolean isSword(String arg) throws CommandException {
@@ -100,7 +96,7 @@ public class CommandWeaponRegistry extends CommandBase
 	@Override
 	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		switch (args.length) {
-		case 1: return CommandBase.getListOfStringsMatchingLastWord(args, "allow", "forbid");
+		case 1: return CommandBase.getListOfStringsMatchingLastWord(args, "allow", "forbid", "is");
 		case 2: return CommandBase.getListOfStringsMatchingLastWord(args, "sword", "weapon");
 		}
 		return null;
