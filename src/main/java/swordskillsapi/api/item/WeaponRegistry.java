@@ -171,14 +171,14 @@ public class WeaponRegistry
 					SwordSkillsApi.LOGGER.warn(String.format("[WeaponRegistry] [%s] %s could not be found - the mod may not be installed or it may have been typed incorrectly", origin, s));
 				} else if (isSword) {
 					if (register) {
-						registerSword(origin, item, false);
+						registerSword(origin, item, true);
 					} else {
-						removeSword(origin, item, false);
+						removeSword(origin, item, true);
 					}
 				} else if (register) {
-					registerWeapon(origin, item, false);
+					registerWeapon(origin, item, true);
 				} else {
-					removeWeapon(origin, item, false);
+					removeWeapon(origin, item, true);
 				}
 			}
 		}
