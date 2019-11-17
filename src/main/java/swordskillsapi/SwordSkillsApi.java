@@ -1,7 +1,6 @@
 package swordskillsapi;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -26,7 +25,7 @@ public class SwordSkillsApi
 	@SidedProxy(clientSide = ID + ".ClientProxy", serverSide = ID + ".CommonProxy")
 	public static CommonProxy proxy;
 
-	public static final Logger LOGGER = LogManager.getLogger(ID);
+	public static final LogWrapper LOGGER = new LogWrapper(LogManager.getLogger(ID));
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {

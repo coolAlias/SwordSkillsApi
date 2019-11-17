@@ -15,11 +15,17 @@ public class Config
 
 	public static void preInit(FMLPreInitializationEvent event) {
 		config = new Configuration(new File(event.getModConfigurationDirectory().getAbsolutePath() + "/" + SwordSkillsApi.ID + ".cfg"));
+		config.load();
+		boolean enableWeaponLog = config.get("Weapon Registry", "Log changes to the WeaponRegistry - recommended to leave enabled until satisfied with the state of the WeaponRegistry", true).getBoolean(true);
+		if (!enableWeaponLog) {
+			SwordSkillsApi.LOGGER.info("Weapon Registry logging is now disabled");
+			SwordSkillsApi.LOGGER.disable();
+		}
+		config.save();
 	}
 
 	public static void postInit() {
 		final String origin = "Config:" + SwordSkillsApi.ID;
-		config.load();
 		Arrays.stream(config.get("Weapon Registry", "[Allowed Swords] Enter items as modid:registered_item_name, each on a separate line between the '<' and '>'", new String[0], "Allow the following items to activate skills requiring a sword").getStringList())
 		.forEach(s -> {
 			Item item = Config.getItemFromString(s);
