@@ -1,5 +1,6 @@
 package swordskillsapi.api.item;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 /**
@@ -21,14 +22,13 @@ public interface IWeapon {
 
 	/**
 	 * Return true if the ItemStack is considered a sword.
-	 * Consider returning !{@link WeaponRegistry#isSwordForbidden} to allow users to choose the item's sword status.
+	 * Consider returning !{@link WeaponRegistry#isSwordForbidden(Item)} to allow users to choose the item's sword status.
 	 */
 	boolean isSword(ItemStack stack);
 
 	/**
-	 * Return true if the ItemStack is considered a weapon
-	 * (should return true if {@link #isSword} returns true)
-	 * Consider returning !{@link WeaponRegistry#isWeaponForbidden} to allow users to choose the item's weapon status.
+	 * Return true if the ItemStack is considered a weapon; if {@link #isSword} returns true, this should also return true.
+	 * Consider returning !{@link WeaponRegistry#isWeaponForbidden(Item)} to allow users to choose the item's weapon status.
 	 */
 	boolean isWeapon(ItemStack stack);
 

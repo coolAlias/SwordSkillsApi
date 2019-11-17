@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -69,8 +70,21 @@ public class WeaponRegistry
 	}
 
 	/**
+	 * Returns true if the ItemStack is considered a sword.
+	 * * Do not call this method from {@link IWeapon#isSword(ItemStack)} or {@link IWeapon#isWeapon(ItemStack)}.
+	 * @return {@link IWeapon#isSword(ItemStack)} if the stack contains an {@link IWeapon}, otherwise {@link #isSword(Item)}
+	 */
+	public boolean isSword(ItemStack stack) {
+		if (stack == null) {
+			return false;
+		} else if (stack.getItem() instanceof IWeapon) {
+			return ((IWeapon) stack.getItem()).isSword(stack);
+		}
+		return isSword(stack.getItem());
+	}
+
+	/**
 	 * Returns true if the item is forbidden either as a sword or a weapon (if it's not a weapon, it's not a sword).
-	 * Recommended to use this method instead of {@link #isSword} when implementing {@link IWeapon#isSword}.
 	 */
 	public boolean isSwordForbidden(Item item) {
 		return forbidden_swords.contains(item) || isWeaponForbidden(item);
@@ -78,14 +92,28 @@ public class WeaponRegistry
 
 	/**
 	 * Returns true if the item is considered a melee weapon of any kind and has not been forbidden as such
+	 * Any item that returns true for {@link #isSword(Item)} will also return true here.
 	 */
 	public boolean isWeapon(Item item) {
 		return !isWeaponForbidden(item) && (isSword(item) || item instanceof ItemAxe || allowed_weapons.contains(item));
 	}
 
 	/**
+	 * Returns true if the ItemStack is considered a melee weapon of any kind.
+	 * Do not call this method from {@link IWeapon#isSword(ItemStack)} or {@link IWeapon#isWeapon(ItemStack)}.
+	 * @return {@link IWeapon#isWeapon(ItemStack)} if the stack contains an {@link IWeapon}, otherwise {@link #isWeapon(Item)}
+	 */
+	public boolean isWeapon(ItemStack stack) {
+		if (stack == null) {
+			return false;
+		} else if (stack.getItem() instanceof IWeapon) {
+			return ((IWeapon) stack.getItem()).isWeapon(stack);
+		}
+		return isWeapon(stack.getItem());
+	}
+
+	/**
 	 * Returns true if the item is forbidden as a weapon.
-	 * Recommended to use this method instead of {@link #isWeapon} when implementing {@link IWeapon#isWeapon}.
 	 */
 	public boolean isWeaponForbidden(Item item) {
 		return forbidden_weapons.contains(item);
