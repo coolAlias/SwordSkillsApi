@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
  * If a skill's activation requires blocking, the item must be able to block or
  * it will not be able to activate such skills.
  * 
- * Some skills may only be performed while wielding a {@link #isSword sword}; these are:
- * {@code LeapingBlow}, {@code MortalDraw}, {@code RisingCut}, and {@code SwordBeam}.
+ * Some skills may only be performed while wielding a {@link #isSword sword}; these are
+ * indicated by a [Sword] tag in the description of the skill's activation method.
  * 
  * For items that do not use NBT or stack damage, consider registering them as weapons
  * or as swords via the {@link WeaponRegistry} using FML's Inter-Mod Communications.
