@@ -11,9 +11,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import swordskillsapi.SwordSkillsApi;
+import swordskillsapi.network.PacketDispatcher;
+import swordskillsapi.network.client.SyncWeaponRegistryPacket;
 
 /**
  * 
@@ -60,7 +65,23 @@ public class WeaponRegistry
 
 	public static final WeaponRegistry INSTANCE = new WeaponRegistry();
 
-	private WeaponRegistry() {}
+	private boolean hasServerStarted = false;
+
+	public WeaponRegistry() {}
+
+	public void copy(WeaponRegistry o) {
+		this.allowed_swords.items.addAll(o.allowed_swords.items);
+		this.allowed_weapons.items.addAll(o.allowed_weapons.items);
+		this.forbidden_swords.items.addAll(o.forbidden_swords.items);
+		this.forbidden_weapons.items.addAll(o.forbidden_weapons.items);
+	}
+
+	/**
+	 * Call this method when the server starts to ensure future changes are propagated to connected clients
+	 */
+	public void onServerStart() {
+		this.hasServerStarted = true;
+	}
 
 	/**
 	 * Returns true if the item is considered a sword and has not been forbidden as such
@@ -293,8 +314,11 @@ public class WeaponRegistry
 			}
 			unRegister(origin, item, registry);
 		}
-		if (registry.items.add(item)) {
+		if (registry.items.add(item.getRegistryName())) {
 			SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] Added %s to the %s list", origin, item.getRegistryName().toString(), registry.name));
+			if (this.hasServerStarted) {
+				PacketDispatcher.sendToAll(new SyncWeaponRegistryPacket(registry, item));
+			}
 			return true;
 		}
 		SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] %s was already on the %s list", origin, item.getRegistryName().toString(), registry.name));
@@ -317,10 +341,44 @@ public class WeaponRegistry
 	private void unRegister(final String origin, final Item item, @Nullable final WeaponRegistryHolder registry) {
 		Stream.of(allowed_swords, allowed_weapons, forbidden_swords, forbidden_weapons)
 		.forEach(s -> {
-			if (s != registry && s.items.remove(item)) {
+			if (s != registry && s.items.remove(item.getRegistryName())) {
 				SwordSkillsApi.LOGGER.info(String.format("[WeaponRegistry] [%s] Removed %s from list of %s", origin, item.getRegistryName().toString(), s.name));
 			}
 		});
+	}
+
+	/**
+	 * Updates the client-side weapon registries when a sync packet is received
+	 */
+	@SideOnly(Side.CLIENT)
+	public void syncWeaponRegistryEntry(String registry_name, ResourceLocation item) {
+		Stream.of(allowed_swords, allowed_weapons, forbidden_swords, forbidden_weapons).forEach(s -> s.items.remove(item));
+		WeaponRegistryHolder registry = this.getRegistryByName(registry_name);
+		registry.items.add(item);
+	}
+
+	private WeaponRegistryHolder getRegistryByName(String registry) {
+		switch (registry) {
+		case "Allowed Swords": return allowed_swords;
+		case "Allowed Weapons": return allowed_weapons;
+		case "Forbidden Swords": return forbidden_swords;
+		case "Forbidden Weapons": return forbidden_weapons;
+		default: throw new IllegalArgumentException("Invalid WeaponRegistryHolder name: " + registry);
+		}
+	}
+
+	public void readFromBuffer(PacketBuffer buffer) {
+		this.allowed_swords.readFromBuffer(buffer);
+		this.allowed_weapons.readFromBuffer(buffer);
+		this.forbidden_swords.readFromBuffer(buffer);
+		this.forbidden_weapons.readFromBuffer(buffer);
+	}
+
+	public void writeToBuffer(PacketBuffer buffer) {
+		this.allowed_swords.writeToBuffer(buffer);
+		this.allowed_weapons.writeToBuffer(buffer);
+		this.forbidden_swords.writeToBuffer(buffer);
+		this.forbidden_weapons.writeToBuffer(buffer);
 	}
 
 	/**
@@ -351,18 +409,36 @@ public class WeaponRegistry
 		return null;
 	}
 
-	private static class WeaponRegistryHolder
+	public static class WeaponRegistryHolder
 	{
-		private final String name;
+		public final String name;
 
-		private final Set<Item> items = new HashSet<Item>();
+		private final Set<ResourceLocation> items = new HashSet<ResourceLocation>();
 
-		public WeaponRegistryHolder(String name) {
+		private WeaponRegistryHolder(String name) {
 			this.name = name;
 		}
 
-		public boolean contains(Item item) {
-			return this.items.contains(item);
+		private boolean contains(Item item) {
+			return this.items.contains(item.getRegistryName());
+		}
+
+		private void readFromBuffer(PacketBuffer buffer) {
+			int n = buffer.readInt();
+			for (int i = 0; i < n; i++) {
+				String s = buffer.readStringFromBuffer(256);
+				ResourceLocation location = WeaponRegistry.getResourceLocation(s);
+				if (location != null) {
+					this.items.add(location);
+				}
+			}
+		}
+
+		private void writeToBuffer(PacketBuffer buffer) {
+			buffer.writeInt(this.items.size());
+			this.items.stream().forEach(s -> {
+				buffer.writeString(s.toString());
+			});
 		}
 	}
 }

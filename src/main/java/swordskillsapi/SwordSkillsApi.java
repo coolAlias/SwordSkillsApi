@@ -2,14 +2,18 @@ package swordskillsapi;
 
 import org.apache.logging.log4j.LogManager;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import swordskillsapi.api.item.WeaponRegistry;
 import swordskillsapi.command.CommandWeaponRegistry;
+import swordskillsapi.event.ModEventHandler;
+import swordskillsapi.network.PacketDispatcher;
 
 @Mod(modid = SwordSkillsApi.ID, name = SwordSkillsApi.NAME, version = SwordSkillsApi.VERSION, updateJSON = SwordSkillsApi.VERSION_LIST)
 public class SwordSkillsApi
@@ -30,6 +34,8 @@ public class SwordSkillsApi
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Config.preInit(event);
+		PacketDispatcher.initialize();
+		MinecraftForge.EVENT_BUS.register(new ModEventHandler());
 	}
 
 	@Mod.EventHandler
@@ -47,5 +53,10 @@ public class SwordSkillsApi
 	@Mod.EventHandler
 	public void onServerStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(CommandWeaponRegistry.INSTANCE);
+	}
+
+	@Mod.EventHandler
+	public void onServerStarted(FMLServerStartedEvent event) {
+		WeaponRegistry.INSTANCE.onServerStart();
 	}
 }
