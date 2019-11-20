@@ -70,9 +70,13 @@ public class WeaponRegistry
 	public WeaponRegistry() {}
 
 	public void copy(WeaponRegistry o) {
+		this.allowed_swords.items.clear();
 		this.allowed_swords.items.addAll(o.allowed_swords.items);
+		this.allowed_weapons.items.clear();
 		this.allowed_weapons.items.addAll(o.allowed_weapons.items);
+		this.forbidden_swords.items.clear();
 		this.forbidden_swords.items.addAll(o.forbidden_swords.items);
+		this.forbidden_weapons.items.clear();
 		this.forbidden_weapons.items.addAll(o.forbidden_weapons.items);
 	}
 
