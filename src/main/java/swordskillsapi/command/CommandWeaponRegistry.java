@@ -55,13 +55,15 @@ public class CommandWeaponRegistry extends CommandBase
 			throw new WrongUsageException("commands.swordskillsapi.item.unknown", args[2]);
 		}
 		boolean isSword = isSword(args[1]);
+		boolean is = (isSword ? WeaponRegistry.INSTANCE.isSword(item) : WeaponRegistry.INSTANCE.isWeapon(item));
 		String msg = "commands.swordskillsapi.";
 		if (args[0].equalsIgnoreCase("is")) {
-			boolean is = (isSword ? WeaponRegistry.INSTANCE.isSword(item) : WeaponRegistry.INSTANCE.isWeapon(item));
 			msg += "is." + (is ? "true" : "false");
 		} else if (args[0].equalsIgnoreCase("allow")) {
 			msg += "allow.";
-			if (isSword) {
+			if (is) {
+				msg += "unchanged";
+			} else if (isSword) {
 				msg += (WeaponRegistry.INSTANCE.registerSword("Command", item, true) ? "success" : "fail");
 			} else if (WeaponRegistry.INSTANCE.registerWeapon("Command", item, true)) {
 				msg += "success";
@@ -70,7 +72,9 @@ public class CommandWeaponRegistry extends CommandBase
 			}
 		} else if (args[0].equalsIgnoreCase("forbid")) {
 			msg += "forbid.";
-			if (isSword) {
+			if (!is) {
+				msg += "unchanged";
+			} else if (isSword) {
 				msg += (WeaponRegistry.INSTANCE.removeSword("Command", item, true) ? "success" : "fail");
 			} else if (WeaponRegistry.INSTANCE.removeWeapon("Command", item, true)) {
 				msg += "success";
