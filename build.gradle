@@ -20,7 +20,7 @@ plugins {
 }
 */
 
-version = "1.5"
+version = "1.5.1"
 group= "com.google.coolalias008.swordskillsapi" 
 archivesBaseName = "SwordSkillsApi-1.9.4"
 
