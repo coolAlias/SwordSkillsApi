@@ -13,11 +13,11 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.1.0"
+version = "1.5"
 group= "com.google.coolalias008.swordskillsapi" 
-archivesBaseName = "1.10.2-SwordSkillsApi"
+archivesBaseName = "SwordSkillsApi-1.10.2"
 
-sourceCompatibility = targetCompatibility = "1.7"
+sourceCompatibility = targetCompatibility = "1.8"
 
 dependencies {
     compile files (
