@@ -1,13 +1,13 @@
 {
 	"homepage": "https://www.planetminecraft.com/mod/sword-skills-api/",
 	"promos": {
-		"1.10.2-latest": "1.10.2-1.5",
-		"1.10.2-recommended": "1.10.2-1.5",
+		"1.10.2-latest": "1.10.2-1.5.1",
+		"1.10.2-recommended": "1.10.2-1.5.1",
 		"1.9.4-latest": "1.9.4-1.5",
 		"1.9.4-recommended": "1.9.4-1.5"
 	},
 	"1.10.2": {
-		"1.10.2-1.5": "Incorporated WeaponRegistry config and command processing; other fixes and improvements"
+		"1.10.2-1.5.1": "Incorporated WeaponRegistry config and command processing; other fixes and improvements"
 	},
 	"1.9.4": {
 		"1.9.4-1.5": "Incorporated WeaponRegistry config and command processing; other fixes and improvements"
