@@ -103,6 +103,7 @@ public class CommandWeaponRegistry extends CommandBase
 		switch (args.length) {
 		case 1: return CommandBase.getListOfStringsMatchingLastWord(args, "allow", "forbid", "is");
 		case 2: return CommandBase.getListOfStringsMatchingLastWord(args, "sword", "weapon");
+		case 3: return CommandBase.getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys());
 		}
 		return Collections.<String>emptyList();
 	}
