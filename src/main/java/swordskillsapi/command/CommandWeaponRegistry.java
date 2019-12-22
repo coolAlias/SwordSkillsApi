@@ -1,5 +1,6 @@
 package swordskillsapi.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -103,6 +104,6 @@ public class CommandWeaponRegistry extends CommandBase
 		case 1: return CommandBase.getListOfStringsMatchingLastWord(args, "allow", "forbid", "is");
 		case 2: return CommandBase.getListOfStringsMatchingLastWord(args, "sword", "weapon");
 		}
-		return null;
+		return Collections.<String>emptyList();
 	}
 }
