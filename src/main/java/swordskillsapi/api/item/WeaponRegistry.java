@@ -430,7 +430,7 @@ public class WeaponRegistry
 		private void readFromBuffer(PacketBuffer buffer) {
 			int n = buffer.readInt();
 			for (int i = 0; i < n; i++) {
-				String s = buffer.readStringFromBuffer(256);
+				String s = buffer.readString(256);
 				ResourceLocation location = WeaponRegistry.getResourceLocation(s);
 				if (location != null) {
 					this.items.add(location);

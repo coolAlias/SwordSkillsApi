@@ -24,7 +24,7 @@ public class CommandWeaponRegistry extends CommandBase
 	private CommandWeaponRegistry() {}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return SwordSkillsApi.ID;
 	}
 
@@ -37,18 +37,18 @@ public class CommandWeaponRegistry extends CommandBase
 	 * swordskillsapi <allow|forbid|is> <sword|weapon> modid:item_name
 	 */
 	@Override
-	public String getCommandUsage(ICommandSender sender) {
+	public String getUsage(ICommandSender sender) {
 		return "commands.swordskillsapi.usage";
 	}
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args == null || args.length != 3) {
-			throw new WrongUsageException(getCommandUsage(sender));
+			throw new WrongUsageException(getUsage(sender));
 		}
 		ResourceLocation location = WeaponRegistry.getResourceLocation(args[2]);
 		if (location == null) {
-			throw new WrongUsageException(getCommandUsage(sender));
+			throw new WrongUsageException(getUsage(sender));
 		}
 		Item item = Item.REGISTRY.getObject(location);
 		if (item == null) {
@@ -85,7 +85,7 @@ public class CommandWeaponRegistry extends CommandBase
 			throw new WrongUsageException("commands.swordskillsapi.action.unknown");
 		}
 		String type = "commands.swordskillsapi." + (isSword ? "sword" : "weapon");
-		sender.addChatMessage(new TextComponentTranslation(msg, args[2], new TextComponentTranslation(type)));
+		sender.sendMessage(new TextComponentTranslation(msg, args[2], new TextComponentTranslation(type)));
 	}
 
 	private boolean isSword(String arg) throws CommandException {
@@ -98,7 +98,7 @@ public class CommandWeaponRegistry extends CommandBase
 	}
 
 	@Override
-	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		switch (args.length) {
 		case 1: return CommandBase.getListOfStringsMatchingLastWord(args, "allow", "forbid", "is");
 		case 2: return CommandBase.getListOfStringsMatchingLastWord(args, "sword", "weapon");

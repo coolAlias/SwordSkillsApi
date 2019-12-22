@@ -31,8 +31,8 @@ public class SyncWeaponRegistryPacket extends AbstractClientMessage<SyncWeaponRe
 
 	@Override
 	protected void read(PacketBuffer buffer) throws IOException {
-		this.registry_name = buffer.readStringFromBuffer(24);
-		String s = buffer.readStringFromBuffer(256);
+		this.registry_name = buffer.readString(24);
+		String s = buffer.readString(256);
 		this.location = WeaponRegistry.getResourceLocation(s);
 		if (this.location == null) {
 			SwordSkillsApi.LOGGER.error("Invalid resource location string received in SyncWeaponRegistryPacket: " + s);

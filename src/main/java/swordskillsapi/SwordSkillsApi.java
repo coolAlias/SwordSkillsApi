@@ -20,7 +20,7 @@ public class SwordSkillsApi
 {
 	public static final String ID = "swordskillsapi";
 	public static final String NAME = "Sword Skills API";
-	public static final String VERSION = "1.9.4-1.5";
+	public static final String VERSION = "1.10.2-1.5";
 	public static final String VERSION_LIST = "https://raw.githubusercontent.com/coolAlias/SwordSkillsApi/master/src/main/resources/versionlist.json";
 
 	@Mod.Instance(ID)
