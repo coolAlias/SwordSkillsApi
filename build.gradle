@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.5"
+version = "1.5.1"
 group= "com.google.coolalias008.swordskillsapi" 
 archivesBaseName = "SwordSkillsApi-1.11.2"
 
