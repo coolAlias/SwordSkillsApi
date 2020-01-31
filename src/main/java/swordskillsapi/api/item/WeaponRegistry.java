@@ -100,7 +100,7 @@ public class WeaponRegistry
 	 * @return {@link IWeapon#isSword(ItemStack)} if the stack contains an {@link IWeapon}, otherwise {@link #isSword(Item)}
 	 */
 	public boolean isSword(ItemStack stack) {
-		if (stack == null) {
+		if (stack.isEmpty()) {
 			return false;
 		} else if (stack.getItem() instanceof IWeapon) {
 			return ((IWeapon) stack.getItem()).isSword(stack);
@@ -129,7 +129,7 @@ public class WeaponRegistry
 	 * @return {@link IWeapon#isWeapon(ItemStack)} if the stack contains an {@link IWeapon}, otherwise {@link #isWeapon(Item)}
 	 */
 	public boolean isWeapon(ItemStack stack) {
-		if (stack == null) {
+		if (stack.isEmpty()) {
 			return false;
 		} else if (stack.getItem() instanceof IWeapon) {
 			return ((IWeapon) stack.getItem()).isWeapon(stack);
